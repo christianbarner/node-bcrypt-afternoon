@@ -1,19 +1,31 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
+import axios from 'axios'
+
 
 export default class AddTreasure extends Component {
   constructor() {
-    super();
+    super()
     this.state = {
       treasureURL: '',
-    };
+    }
   }
 
   handleInput(e) {
-    this.setState({ treasureURL: e.target.value });
+    this.setState({ treasureURL: e.target.value })
   }
 
   addTreasure() {
-    // post to /api/treasure/user here
+    const { treasureURL } = this.state
+    axios
+      .post('/api/treasure/user', { treasureURL: treasureURL })
+      .then(res => {
+        this.props.addMyTreasure(res.data)
+        this.setState({ treasureURL: '' })
+      })
+      .catch(error => {
+        console.log(error)
+        alert(error.response.request.response)
+      })
   }
 
   render() {
@@ -27,6 +39,6 @@ export default class AddTreasure extends Component {
         />
         <button onClick={() => this.addTreasure()}>Add</button>
       </div>
-    );
+    )
   }
 }

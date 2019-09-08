@@ -1,47 +1,71 @@
-import React, { Component } from 'react';
-import './Header.css';
+import React, { Component } from 'react'
+import './Header.css'
+const axios = require('axios')
 
 export default class Header extends Component {
   constructor() {
-    super();
+    super()
     this.state = {
       username: '',
       password: '',
       isAdmin: false,
-    };
-    this.register = this.register.bind(this);
-    this.login = this.login.bind(this);
-    this.logout = this.logout.bind(this);
+    }
+    this.register = this.register.bind(this)
+    this.login = this.login.bind(this)
+    this.logout = this.logout.bind(this)
   }
 
   handleUsernameInput(value) {
-    this.setState({ username: value });
+    this.setState({ username: value })
   }
 
   handlePasswordInput(value) {
-    this.setState({ password: value });
+    this.setState({ password: value })
   }
 
   toggleAdmin() {
-    const { isAdmin } = this.state;
-    this.setState({ isAdmin: !isAdmin });
+    const { isAdmin } = this.state
+    this.setState({ isAdmin: !isAdmin })
   }
 
   login() {
-    // axios POST to /auth/login here
+    const { username, password } = this.state
+    axios
+      .post('/auth/login', { username, password })
+      .then(user => {
+        this.props.updateUser(user.data)
+        this.setState({ username: '', password: '' })
+      })
+      .catch(err => alert(err.response.request.response))
   }
 
   register() {
-    // axios POST to /auth/register here
+    //deconstru
+    const { username, password, isAdmin } = this.state
+    axios
+      .post('/auth/register', { username, password, isAdmin })
+      .then(user => {
+        this.setState({ username: '', password: ''})
+        this.props.updateUser(user.data)
+      })
+      .catch(err => {
+        this.setState ({username: '', password: ' '})
+        alert(err.response.request.response)
+      })
   }
 
   logout() {
-    // axios GET to /auth/logout here
+    axios
+      .get('/auth/logout')
+      .then(() => {
+        this.props.updateUser({})
+      })
+      .catch(err => console.log(err))
   }
 
   render() {
-    const { username, password } = this.state;
-    const { user } = this.props;
+    const { username, password } = this.state
+    const { user } = this.props
     return (
       <div className="Header">
         <div className="title">Dragon's Lair</div>
@@ -76,7 +100,7 @@ export default class Header extends Component {
           </div>
         )}
       </div>
-    );
+    )
   }
 }
 
